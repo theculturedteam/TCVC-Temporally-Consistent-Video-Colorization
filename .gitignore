@@ -1,11 +1,19 @@
+# Ignore Python compiled files
 *.pyc
 
+# Ignore model directories, except readme.txt in pretrained_models
 experiments/models/
 experiments/pretrained_models/
 !experiments/pretrained_models/readme.txt
 
+# Ignore Jupyter Notebook checkpoints
 **/.ipynb_checkpoints/
+
+# Ignore Python cache directories
 **/__pycache__/
 
-.ipynb_checkpoints/
-__pycache__/
+# Ignore build artifacts at all levels
+**/build/
+**/dist/
+**/*_cuda.egg-info/
+**/*.so
