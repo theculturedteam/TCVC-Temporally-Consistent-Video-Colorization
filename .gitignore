@@ -1,3 +1,8 @@
 *.pyc
-experiments/models
-experiments/pretrained_models
+
+experiments/models/
+experiments/pretrained_models/
+!experiments/pretrained_models/readme.txt
+
+**/.ipynb_checkpoints/
+**/__pycache__/
