@@ -24,9 +24,12 @@ def calculate_psnr(img1, img2):
     # img1 and img2 have range [0, 255]
     img1 = img1.astype(np.float64)
     img2 = img2.astype(np.float64)
+
     mse = np.mean((img1 - img2) ** 2)
+
     if mse == 0:
         return float("inf")
+
     return 20 * math.log10(255.0 / math.sqrt(mse))
 
 
@@ -119,6 +122,7 @@ def calculate_psnr_folders(input_path, GT_path, interval_length, logger):
 def save_imglist(k, end_k, output_dir, img_list, logger, img_paths):
     """The color type of input img list is rgb"""
     count = 0
+
     for i in range(k, end_k):
         imname = img_paths[count].split("/")[-1]
         # print(imname)
@@ -195,6 +199,7 @@ def main():
     avg_psnr_l = []
     for i in range(len(video_list)):
         video = video_list[i]
+
         ## mkdir output dir
         save_subfolder = osp.join(save_folder, video)
         if save_imgs:
@@ -206,6 +211,7 @@ def main():
         imgs = [
             data_util.read_img(None, img_list[i]) / 255.0 for i in range(len(img_list))
         ]
+
         if imgs[0].shape[-1] == 3:
             rgb_flag = True
         elif imgs[0].shape[-1] == 1:
@@ -219,6 +225,7 @@ def main():
         keyframe_idx = list(range(0, len(imgs), interval_length + 1))
         if keyframe_idx[-1] == (len(imgs) - 1):
             keyframe_idx = keyframe_idx[:-1]
+
         print("Processing '{}'".format(video))
         print("Total images: {}  keyframe index: {}".format(len(imgs), keyframe_idx))
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
