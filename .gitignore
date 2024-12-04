@@ -19,3 +19,5 @@
 **/dist/
 **/*_cuda.egg-info/
 **/*.so
+
+/results/*
