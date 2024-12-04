@@ -2,7 +2,7 @@
 *.pyc
 
 # Ignore model directories, except readme.txt in pretrained_models
-/experiments/models/
+/experiments/TCVC_IDC/
 /experiments/pretrained_models/
 !/experiments/pretrained_models/readme.txt
 
