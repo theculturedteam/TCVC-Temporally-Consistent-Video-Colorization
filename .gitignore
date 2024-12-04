@@ -2,9 +2,9 @@
 *.pyc
 
 # Ignore model directories, except readme.txt in pretrained_models
-experiments/models/
-experiments/pretrained_models/
-!experiments/pretrained_models/readme.txt
+/experiments/models/
+/experiments/pretrained_models/
+!/experiments/pretrained_models/readme.txt
 
 # Ignore Jupyter Notebook checkpoints
 **/.ipynb_checkpoints/
