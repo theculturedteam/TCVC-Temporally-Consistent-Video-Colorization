@@ -145,9 +145,7 @@ def main():
     interval_length = 17
 
     # specify the input folder and the output folder
-    Input_dataset_folder = "/data2/yhliu/old_film"
-
-    save_folder = "../results/TCVC_{}_interlen{}_output".format(key_net, interval_length)
+    Input_dataset_folder = "../../Test Videos/With GT"
 
 
     # specify key net
