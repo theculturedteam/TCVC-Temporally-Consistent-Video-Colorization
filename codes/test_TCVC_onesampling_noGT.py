@@ -24,10 +24,11 @@ def calculate_psnr(img1, img2):
     # img1 and img2 have range [0, 255]
     img1 = img1.astype(np.float64)
     img2 = img2.astype(np.float64)
-    mse = np.mean((img1 - img2)**2)
+    mse = np.mean((img1 - img2) ** 2)
     if mse == 0:
-        return float('inf')
+        return float("inf")
     return 20 * math.log10(255.0 / math.sqrt(mse))
+
 
 def calculate_psnr_folders(input_path, GT_path, interval_length, logger):
     input_folder_list = os.listdir(input_path)
@@ -48,7 +49,7 @@ def calculate_psnr_folders(input_path, GT_path, interval_length, logger):
 
         max_idx = len(GT_img_path_l)
         keyframe_idx = list(range(0, max_idx, interval_length + 1))
-        #print(keyframe_idx)
+        # print(keyframe_idx)
 
         avg_psnr, N_im = 0, 0
         key_avg_psnr, inter_avg_psnr = 0, 0
@@ -58,18 +59,16 @@ def calculate_psnr_folders(input_path, GT_path, interval_length, logger):
         for img1_path, img2_path in zip(GT_img_path_l, Input_img_path_l):
             img1 = cv2.imread(img1_path)
             img2 = cv2.imread(img2_path)
-            img_name = img1_path.split('/')[-1]
+            img_name = img1_path.split("/")[-1]
 
             psnr = calculate_psnr(img1, img2)
             avg_psnr += psnr
 
-
-
-            if count in keyframe_idx or count == len(GT_img_path_l)-1:
+            if count in keyframe_idx or count == len(GT_img_path_l) - 1:
                 key_avg_psnr += psnr
                 key_N_im += 1
                 key_flag = True
-                #print(img1_path)
+                # print(img1_path)
             else:
                 inter_avg_psnr += psnr
                 inter_N_im += 1
@@ -97,36 +96,37 @@ def calculate_psnr_folders(input_path, GT_path, interval_length, logger):
         inter_n_l.append(inter_N_im)
 
         message = "Folder {} - Average PSNR: {:.6f} dB for {} frames; AVG key PSNR: {:.6f} dB for {} key frames; AVG inter PSNR: {:.6f} dB for {} inter frames.".format(
-                    folder, avg_psnr, N_im, key_avg_psnr, key_N_im, inter_avg_psnr, inter_N_im)
+            folder, avg_psnr, N_im, key_avg_psnr, key_N_im, inter_avg_psnr, inter_N_im
+        )
         logger.info(message)
 
-
     logger.info("################ Final Results ################")
-    logger.info('Inter: {}'.format(str(interval_length)))
-
+    logger.info("Inter: {}".format(str(interval_length)))
 
     message = "Total Average PSNR: {:.6f} dB for {} clips; AVG key PSNR: {:.6f} dB for {} key frames; AVG inter PSNR: {:.6f} dB for {} inter frames.".format(
-        sum(avg_psnr_l) / len(avg_psnr_l), len(input_folder_list),
-        sum(key_avg_psnr_l) / len(key_avg_psnr_l), sum(key_n_l),
-        sum(inter_avg_psnr_l) / len(inter_avg_psnr_l), sum(inter_n_l),
-        )
+        sum(avg_psnr_l) / len(avg_psnr_l),
+        len(input_folder_list),
+        sum(key_avg_psnr_l) / len(key_avg_psnr_l),
+        sum(key_n_l),
+        sum(inter_avg_psnr_l) / len(inter_avg_psnr_l),
+        sum(inter_n_l),
+    )
     logger.info(message)
 
-
     return avg_psnr_l
-
 
 
 def save_imglist(k, end_k, output_dir, img_list, logger, img_paths):
     """The color type of input img list is rgb"""
     count = 0
     for i in range(k, end_k):
-        imname = img_paths[count].split('/')[-1]
-        #print(imname)
+        imname = img_paths[count].split("/")[-1]
+        # print(imname)
         out_path = os.path.join(output_dir, imname)
-        #logger.info("save img: {}".format(out_path))
-        cv2.imwrite(out_path, img_list[count][:,:,::-1])
+        # logger.info("save img: {}".format(out_path))
+        cv2.imwrite(out_path, img_list[count][:, :, ::-1])
         count += 1
+
 
 def main():
     #################
@@ -147,15 +147,18 @@ def main():
     # specify the input folder and the output folder
     Input_dataset_folder = "../../Test Videos/With GT"
 
+    save_folder = "../results/TCVC_{}_interlen{}_output".format(
+        key_net, interval_length
+    )
 
     # specify key net
 
     if key_net == "IDC":
-        model = TCVC_IDC_arch.TCVC_IDC(nf=64, N_RBs=3, key_net="sig17", dataset="DAVIS4")
+        model = TCVC_IDC_arch.TCVC_IDC(
+            nf=64, N_RBs=3, key_net="sig17", dataset="DAVIS4"
+        )
     else:
-        raise NotImplementedError('Backbone [{}] is not yet ready!'.format(key_net))
-
-
+        raise NotImplementedError("Backbone [{}] is not yet ready!".format(key_net))
 
     #### evaluation
     crop_border = 0
@@ -181,9 +184,13 @@ def main():
     model.eval()
     model = model.to(device)
 
-
     video_list = sorted(os.listdir(Input_dataset_folder))
-    video_list = [i for i in video_list if os.path.isdir(os.path.join(Input_dataset_folder, i))]
+
+    # The code filters video_list to include only those elements that are directory names (as determined by os.path.isdir) in the Input_dataset_folder path.
+    video_list = [
+        i for i in video_list if os.path.isdir(os.path.join(Input_dataset_folder, i))
+    ]
+
     print(video_list)
     avg_psnr_l = []
     for i in range(len(video_list)):
@@ -195,18 +202,22 @@ def main():
 
         video_dir_path = os.path.join(Input_dataset_folder, video)
         img_list = sorted(glob.glob(os.path.join(video_dir_path, "*.png")))
-        #print(img_list)
-        imgs = [data_util.read_img(None, img_list[i])/255. for i in range(len(img_list))]
+        # print(img_list)
+        imgs = [
+            data_util.read_img(None, img_list[i]) / 255.0 for i in range(len(img_list))
+        ]
         if imgs[0].shape[-1] == 3:
             rgb_flag = True
         elif imgs[0].shape[-1] == 1:
             rgb_flag = False
         else:
-            print('weird img channel: {}! please double check!'.format(imgs[0].shape[-1]))
+            print(
+                "weird img channel: {}! please double check!".format(imgs[0].shape[-1])
+            )
             exit()
 
-        keyframe_idx = list(range(0, len(imgs), interval_length+1))
-        if keyframe_idx[-1] == (len(imgs)-1):
+        keyframe_idx = list(range(0, len(imgs), interval_length + 1))
+        if keyframe_idx[-1] == (len(imgs) - 1):
             keyframe_idx = keyframe_idx[:-1]
         print("Processing '{}'".format(video))
         print("Total images: {}  keyframe index: {}".format(len(imgs), keyframe_idx))
@@ -215,45 +226,76 @@ def main():
         count = 0
         avg_psnr, N_im = 0, 0
         for k in keyframe_idx:
-            img_paths = img_list[k:k+interval_length+2]
-            #print(img_paths)
-            img_in = imgs[k:k+interval_length+2] # get input list
-            img_in = np.stack(img_in, 0) # [9, H, W, 3] rgb
-            img_tensor = torch.from_numpy(img_in.transpose(0,3,1,2)).float()
+            img_paths = img_list[k : k + interval_length + 2]
+            # print(img_paths)
+            img_in = imgs[k : k + interval_length + 2]  # get input list
+            img_in = np.stack(img_in, 0)  # [9, H, W, 3] rgb
+            img_tensor = torch.from_numpy(img_in.transpose(0, 3, 1, 2)).float()
             if rgb_flag:
-                img_lab_tensor = data_util.rgb2lab(img_tensor) # [9, 3, H, W] lab (-1, 1)
-                img_l_tensor = img_lab_tensor[:,:1,:,:] # get l channel, original size (-0.5, 0.5)
+                img_lab_tensor = data_util.rgb2lab(
+                    img_tensor
+                )  # [9, 3, H, W] lab (-1, 1)
+                img_l_tensor = img_lab_tensor[
+                    :, :1, :, :
+                ]  # get l channel, original size (-0.5, 0.5)
             else:
                 img_l_tensor = img_tensor - 0.5
 
-            img_l_rs_tensor = F.interpolate(img_l_tensor, size=[GT_size, GT_size], mode="bilinear") # resize l channel to 256*256\
-            img_l_rs_tensor_list = [img_l_rs_tensor[i:i+1,...].cuda() for i in range(img_l_rs_tensor.shape[0])] # generate input list
+            img_l_rs_tensor = F.interpolate(
+                img_l_tensor, size=[GT_size, GT_size], mode="bilinear"
+            )  # resize l channel to 256*256\
+            img_l_rs_tensor_list = [
+                img_l_rs_tensor[i : i + 1, ...].cuda()
+                for i in range(img_l_rs_tensor.shape[0])
+            ]  # generate input list
 
             with torch.no_grad():
-                out_ab, _, _, _, _ = model(img_l_rs_tensor_list) # [1, 9, 3, H, W] rgb (0, 1)
-#                 out_rgb = torch.cat((out_rgb[:,:1,:,:,:], w_rgb), 1)
-            out_ab = out_ab.detach().cpu()[0,...]
+                out_ab, _, _, _, _ = model(
+                    img_l_rs_tensor_list
+                )  # [1, 9, 3, H, W] rgb (0, 1)
+            #                 out_rgb = torch.cat((out_rgb[:,:1,:,:,:], w_rgb), 1)
+            out_ab = out_ab.detach().cpu()[0, ...]
 
             N, C, H, W = img_tensor.size()
-            out_a_rs = F.interpolate(out_ab[:,:1,:,:], size=[H, W], mode="bilinear") # resize ab channel to original size
-            out_b_rs = F.interpolate(out_ab[:,1:2,:,:], size=[H, W], mode="bilinear")
-#             out_ab_rs = F.interpolate(out_ab, size=[H, W], mode="bilinear")
-            out_lab_origsize = torch.cat((img_l_tensor, out_a_rs, out_b_rs), 1) # concat
-            out_rgb_origsize = data_util.lab2rgb(out_lab_origsize) # lab to rgb [9, 3, H, W] (0, 1)
+            out_a_rs = F.interpolate(
+                out_ab[:, :1, :, :], size=[H, W], mode="bilinear"
+            )  # resize ab channel to original size
+            out_b_rs = F.interpolate(out_ab[:, 1:2, :, :], size=[H, W], mode="bilinear")
+            #             out_ab_rs = F.interpolate(out_ab, size=[H, W], mode="bilinear")
+            out_lab_origsize = torch.cat(
+                (img_l_tensor, out_a_rs, out_b_rs), 1
+            )  # concat
+            out_rgb_origsize = data_util.lab2rgb(
+                out_lab_origsize
+            )  # lab to rgb [9, 3, H, W] (0, 1)
 
-            out_rgb_img = [util.tensor2img(np.clip(out_rgb_origsize[i,...]*255., 0, 255), np.uint8) for i in range(out_rgb_origsize.size(0))] # (0, 255)
-            #import matplotlib.pyplot as plt
-            #plt.imshow(out_rgb_img[0])
-            #plt.show()
+            out_rgb_img = [
+                util.tensor2img(
+                    np.clip(out_rgb_origsize[i, ...] * 255.0, 0, 255), np.uint8
+                )
+                for i in range(out_rgb_origsize.size(0))
+            ]  # (0, 255)
+            # import matplotlib.pyplot as plt
+            # plt.imshow(out_rgb_img[0])
+            # plt.show()
 
+            save_imglist(
+                k, k + len(out_rgb_img), save_subfolder, out_rgb_img, logger, img_paths
+            )
 
-            save_imglist(k, k+len(out_rgb_img), save_subfolder, out_rgb_img, logger, img_paths)
-
-
-    dilation = [1,2,4]
-    weight = [1/3, 1/3, 1/3]
-    JS_b_mean_list, JS_g_mean_list, JS_r_mean_list, JS_b_dict, JS_g_dict, JS_r_dict, CDC = calculate_folders_multiple(save_folder, data_mode, dilation=dilation, weight=weight)
-
+    dilation = [1, 2, 4]
+    weight = [1 / 3, 1 / 3, 1 / 3]
+    (
+        JS_b_mean_list,
+        JS_g_mean_list,
+        JS_r_mean_list,
+        JS_b_dict,
+        JS_g_dict,
+        JS_r_dict,
+        CDC,
+    ) = calculate_folders_multiple(
+        save_folder, data_mode, dilation=dilation, weight=weight
+    )
 
     logger.info("################ Final Results ################")
     logger.info("Data: {} - {}".format(data_mode, Input_dataset_folder))
@@ -261,10 +303,15 @@ def main():
     logger.info("Model path: {}".format(model_path))
     logger.info("Save images: {}".format(save_imgs))
 
-    logger.info("JS_b_mean: {:.6f} JS_g_mean: {:.6f} JS_r_mean: {:.6f}  CDC: {:.6f}".format(np.mean(JS_b_mean_list), np.mean(JS_g_mean_list), np.mean(JS_r_mean_list), CDC))
+    logger.info(
+        "JS_b_mean: {:.6f} JS_g_mean: {:.6f} JS_r_mean: {:.6f}  CDC: {:.6f}".format(
+            np.mean(JS_b_mean_list),
+            np.mean(JS_g_mean_list),
+            np.mean(JS_r_mean_list),
+            CDC,
+        )
+    )
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
