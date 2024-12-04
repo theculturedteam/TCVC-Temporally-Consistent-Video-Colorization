@@ -3,8 +3,9 @@
 
 # Ignore model directories, except readme.txt in pretrained_models
 /experiments/*
-!/experiments/
 /experiments/pretrained_models/*
+!/experiments/
+!/experiments/pretrained_models/
 !/experiments/pretrained_models/readme.txt
 
 # Ignore Jupyter Notebook checkpoints
