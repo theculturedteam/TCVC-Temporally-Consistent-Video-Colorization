@@ -133,7 +133,7 @@ def main():
     # configurations
     #################
     device = torch.device("cuda")
-    os.environ["CUDA_VISIBLE_DEVICES"] = "6"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     
     data_mode = "DAVIS30"  # DAVIS30 | Videvo20
     key_net = "IDC"
