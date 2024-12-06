@@ -149,7 +149,7 @@ def main():
     interval_length = 17
 
     # specify the input folder and the output folder
-    Input_dataset_folder = "../../Test Videos/With GT"
+    Input_dataset_folder = "../../Test Videos/No GT"
 
     save_folder = "../results/TCVC_{}_interlen{}_output".format(
         key_net, interval_length
