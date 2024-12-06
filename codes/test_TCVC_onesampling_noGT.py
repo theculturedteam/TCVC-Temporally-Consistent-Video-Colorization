@@ -206,7 +206,7 @@ def main():
             util.mkdirs(save_subfolder)
 
         video_dir_path = os.path.join(Input_dataset_folder, video)
-        img_list = sorted(glob.glob(os.path.join(video_dir_path, "*.png")))
+        img_list = sorted(glob.glob(os.path.join(video_dir_path, "*.jpeg")))
         # print(img_list)
         imgs = [
             data_util.read_img(None, img_list[i]) / 255.0 for i in range(len(img_list))
