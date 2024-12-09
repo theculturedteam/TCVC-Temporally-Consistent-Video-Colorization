@@ -9,10 +9,10 @@ what we provided.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import functools
-from collections import OrderedDict
+# import functools
+# from collections import OrderedDict
 
-from models.archs import arch_util
+# from models.archs import arch_util
 
 #### keyframe branches
 from models.archs.colorizers.siggraph17 import siggraph17
@@ -21,7 +21,7 @@ from models.archs.colorizers.eccv16 import eccv16
 
 #### Flow estimation
 from models.archs.networks.FlowNet2 import FlowNet2
-from models.archs.flow_vis import *
+# from models.archs.flow_vis import *
 from models.archs.networks.resample2d_package.resample2d import Resample2d
 
 class WeightingNet(nn.Module):
@@ -109,10 +109,10 @@ class TCVC_IDC(nn.Module):
         #### define keyframe branch
         if key_net == "sig17":
             self.fea_key = siggraph17(pretrained=True, model_dir="../experiments/pretrained_models")
-            nf_key = 128
+            self.nf_key = 128
         elif key_net == "eccv16":
             self.fea_key = eccv16(pretrained=True, model_dir="../experiments/pretrained_models")
-            nf_key = 313
+            self.nf_key = 313
         else:
             raise NotImplementedError("Currently only support Sig17")
             

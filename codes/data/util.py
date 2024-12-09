@@ -81,10 +81,12 @@ def _read_img_lmdb(env, key, size):
 def read_img(env, path, size=None):
     """read image by skimage or from png
     return: Numpy int8, HWC, RGB, [0,255]"""
+
     if env is None:  # img
         img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
     else:
         img = _read_img_lmdb(env, path, size)
+
     if img.ndim == 2:
         img = np.expand_dims(img, axis=2)
     elif img.ndim == 3:
@@ -94,6 +96,7 @@ def read_img(env, path, size=None):
     # some images have 4 channels
     if img.shape[2] > 3:
         img = img[:, :, :3]
+
     return img
 
 def read_img_npy(env, path, size=None):
@@ -741,7 +744,7 @@ def imresize_np(img, scale, antialiasing=True):
 if __name__ == '__main__':
     # test imresize function
     # read images
-    img = imread('test.png')
+    img = cv2.imread('test.png')
     img = img * 1.0 / 255
     img = torch.from_numpy(np.transpose(img[:, :, [2, 1, 0]], (2, 0, 1))).float()
     # imresize
