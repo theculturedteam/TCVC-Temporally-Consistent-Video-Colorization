@@ -9,7 +9,7 @@ import logging
 import numpy as np
 import cv2
 import torch
-import torch.nn.functional as F
+# import torch.nn.functional as F
 import math
 
 import utils.util as util
@@ -17,7 +17,7 @@ import data.util as data_util
 
 import models.archs.TCVC_IDC_arch as TCVC_IDC_arch
 
-from compute_hist import *
+# from compute_hist import calculate_folders_multiple
 
 from modelscope.outputs import OutputKeys
 from modelscope.pipelines import pipeline
@@ -150,22 +150,19 @@ def main():
 
     data_mode = "Real"
     key_net = "IDC"
-    color_type = "LAB"
-    GT_size = 256
+    # color_type = "LAB"
+    # gt_image_size = 256
 
-    model_path = "../experiments/TCVC_IDC/models/80000_G.pth"
+    tcvc_model_path = "../experiments/TCVC_IDC/models/80000_G.pth"
 
     interval_length = 17
 
     # specify the input folder and the output folder
-    Input_dataset_folder = "../../Test Videos/No GT"
+    input_folder = "../../Test Videos/No GT"
 
-    save_folder = "../results/TCVC_{}_interlen{}_output".format(
-        key_net, interval_length
-    )
+    output_folder = f"../results/TCVC_{key_net}_interlen{interval_length}_output"
 
     # specify key net
-
     if key_net == "IDC":
         model = TCVC_IDC_arch.TCVC_IDC(
             nf=64, N_RBs=3, key_net="sig17", dataset="DAVIS4"
@@ -174,48 +171,48 @@ def main():
         raise NotImplementedError("Backbone [{}] is not yet ready!".format(key_net))
 
     #### evaluation
-    crop_border = 0
+    # crop_border = 0
 
     # temporal padding mode
     padding = "new_info"
     save_imgs = True
 
-    util.mkdirs(save_folder)
+    util.mkdirs(output_folder)
     util.setup_logger(
-        "base", save_folder, "test", level=logging.INFO, screen=True, tofile=True
+        "base", output_folder, "test", level=logging.INFO, screen=True, tofile=True
     )
     logger = logging.getLogger("base")
 
     #### log info
-    logger.info("Data: {} - {}".format(data_mode, Input_dataset_folder))
-    logger.info("Padding mode: {}".format(padding))
-    logger.info("Model path: {}".format(model_path))
-    logger.info("Save images: {}".format(save_imgs))
+    logger.info(f"Data: {data_mode} - {input_folder}")
+    logger.info(f"Padding mode: {padding}")
+    logger.info(f"Model path: {tcvc_model_path}")
+    logger.info(f"Save images: {save_imgs}")
 
     #### set up the models
-    model.load_state_dict(torch.load(model_path), strict=True)
+    model.load_state_dict(torch.load(tcvc_model_path), strict=True)
     model.eval()
     model = model.to(device)
 
-    video_list = sorted(os.listdir(Input_dataset_folder))
+    video_list = sorted(os.listdir(input_folder))
 
-    # The code filters video_list to include only those elements that are directory names (as determined by os.path.isdir) in the Input_dataset_folder path.
-    video_list = [
-        i for i in video_list if os.path.isdir(os.path.join(Input_dataset_folder, i))
-    ]
+    # The code filters video_list to include only those elements that are directory names (as determined by os.path.isdir) in the input_folder path.
+    video_list = [i for i in video_list if os.path.isdir(os.path.join(input_folder, i))]
 
     print(video_list)
-    avg_psnr_l = []
+    # avg_psnr_l = []
+
     for i in range(len(video_list)):
         video = video_list[i]
 
         ## mkdir output dir
-        save_subfolder = osp.join(save_folder, video)
+        save_subfolder = osp.join(output_folder, video)
         if save_imgs:
             util.mkdirs(save_subfolder)
 
-        video_dir_path = os.path.join(Input_dataset_folder, video)
+        video_dir_path = os.path.join(input_folder, video)
         img_list = sorted(glob.glob(os.path.join(video_dir_path, "*.jpeg")))
+
         # print(img_list)
         imgs = [
             data_util.read_img(None, img_list[i]) / 255.0 for i in range(len(img_list))
@@ -226,89 +223,100 @@ def main():
         elif imgs[0].shape[-1] == 1:
             rgb_flag = False
         else:
-            print(
-                "weird img channel: {}! please double check!".format(imgs[0].shape[-1])
-            )
+            print(f"weird img channel: {imgs[0].shape[-1]}! please double check!")
             exit()
 
         keyframe_idx = list(range(0, len(imgs), interval_length + 1))
         if keyframe_idx[-1] == (len(imgs) - 1):
             keyframe_idx = keyframe_idx[:-1]
 
-        print("Processing '{}'".format(video))
-        print("Total images: {}  keyframe index: {}".format(len(imgs), keyframe_idx))
+        print(f"Processing '{video}'")
+        print(f"Total images: {len(imgs)}")
+        print(f"Keyframe index: {keyframe_idx}")
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-        count = 0
-        avg_psnr, N_im = 0, 0
+        # count = 0
+        # avg_psnr, N_im = 0, 0
         for k in keyframe_idx:
             img_paths = img_list[k : k + interval_length + 2]
 
             for img in img_paths:
                 img_file_w_ext = os.path.basename(img)
 
-                out_path = os.path.join(save_folder, img_file_w_ext)
+                out_path = os.path.join(output_folder, img_file_w_ext)
 
                 result = dd_img_colorization(img)
 
                 cv2.imwrite(out_path, result[OutputKeys.OUTPUT_IMG])
 
-            # # print(img_paths)
-            # img_in = imgs[k : k + interval_length + 2]  # get input list
-            # img_in = np.stack(img_in, 0)  # [9, H, W, 3] rgb
-            # img_tensor = torch.from_numpy(img_in.transpose(0, 3, 1, 2)).float()
-            # if rgb_flag:
-            #     img_lab_tensor = data_util.rgb2lab(
-            #         img_tensor
-            #     )  # [9, 3, H, W] lab (-1, 1)
-            #     img_l_tensor = img_lab_tensor[
-            #         :, :1, :, :
-            #     ]  # get l channel, original size (-0.5, 0.5)
-            # else:
-            #     img_l_tensor = img_tensor - 0.5
-            #
-            # img_l_rs_tensor = F.interpolate(
-            #     img_l_tensor, size=[GT_size, GT_size], mode="bilinear"
-            # )  # resize l channel to 256*256\
-            # img_l_rs_tensor_list = [
-            #     img_l_rs_tensor[i : i + 1, ...].cuda()
-            #     for i in range(img_l_rs_tensor.shape[0])
-            # ]  # generate input list
-            #
-            # with torch.no_grad():
-            #     out_ab, _, _, _, _ = model(
-            #         img_l_rs_tensor_list
-            #     )  # [1, 9, 3, H, W] rgb (0, 1)
-            # #                 out_rgb = torch.cat((out_rgb[:,:1,:,:,:], w_rgb), 1)
-            # out_ab = out_ab.detach().cpu()[0, ...]
-            #
-            # N, C, H, W = img_tensor.size()
-            # out_a_rs = F.interpolate(
-            #     out_ab[:, :1, :, :], size=[H, W], mode="bilinear"
-            # )  # resize ab channel to original size
-            # out_b_rs = F.interpolate(out_ab[:, 1:2, :, :], size=[H, W], mode="bilinear")
-            # #             out_ab_rs = F.interpolate(out_ab, size=[H, W], mode="bilinear")
-            # out_lab_origsize = torch.cat(
-            #     (img_l_tensor, out_a_rs, out_b_rs), 1
-            # )  # concat
-            # out_rgb_origsize = data_util.lab2rgb(
-            #     out_lab_origsize
-            # )  # lab to rgb [9, 3, H, W] (0, 1)
-            #
-            # out_rgb_img = [
-            #     util.tensor2img(
-            #         np.clip(out_rgb_origsize[i, ...] * 255.0, 0, 255), np.uint8
-            #     )
-            #     for i in range(out_rgb_origsize.size(0))
-            # ]  # (0, 255)
-            # # import matplotlib.pyplot as plt
-            # # plt.imshow(out_rgb_img[0])
-            # # plt.show()
-            #
-            # save_imglist(
-            #     k, k + len(out_rgb_img), save_subfolder, out_rgb_img, logger, img_paths
-            # )
-
+    #         img_paths = img_list[k : k + interval_length + 2]
+    #
+    #         # print(img_paths)
+    #         img_in = imgs[k : k + interval_length + 2]  # get input list
+    #         img_in = np.stack(img_in, 0)  # [9, H, W, 3] rgb
+    #
+    #         img_tensor = torch.from_numpy(img_in.transpose(0, 3, 1, 2)).float()
+    #
+    #         if rgb_flag:
+    #             img_lab_tensor = data_util.rgb2lab(
+    #                 img_tensor
+    #             )  # [9, 3, H, W] lab (-1, 1)
+    #
+    #             img_l_tensor = img_lab_tensor[
+    #                 :, :1, :, :
+    #             ]  # get l channel, original size (-0.5, 0.5)
+    #         else:
+    #             img_l_tensor = img_tensor - 0.5
+    #
+    #         # FosRex: rs means real size, I think
+    #         img_l_rs_tensor = F.interpolate(
+    #             img_l_tensor, size=[gt_image_size, gt_image_size], mode="bilinear"
+    #         )  # resize l channel to 256*256\
+    #
+    #         img_l_rs_tensor_list = [
+    #             img_l_rs_tensor[i : i + 1, ...].cuda()
+    #             for i in range(img_l_rs_tensor.shape[0])
+    #         ]  # generate input list
+    #
+    #         with torch.no_grad():
+    #             out_ab, _, _, _, _ = model(
+    #                 img_l_rs_tensor_list
+    #             )  # [1, 9, 3, H, W] rgb (0, 1)
+    #         # out_rgb = torch.cat((out_rgb[:,:1,:,:,:], w_rgb), 1)
+    #
+    #         out_ab = out_ab.detach().cpu()[0, ...]
+    #
+    #         N, C, H, W = img_tensor.size()
+    #
+    #         # resize ab channel to original size
+    #         out_a_rs = F.interpolate(out_ab[:, :1, :, :], size=[H, W], mode="bilinear")
+    #         out_b_rs = F.interpolate(out_ab[:, 1:2, :, :], size=[H, W], mode="bilinear")
+    #
+    #         # out_ab_rs = F.interpolate(out_ab, size=[H, W], mode="bilinear")
+    #
+    #         out_lab_origsize = torch.cat(
+    #             (img_l_tensor, out_a_rs, out_b_rs), 1
+    #         )  # concat
+    #
+    #         out_rgb_origsize = data_util.lab2rgb(
+    #             out_lab_origsize
+    #         )  # lab to rgb [9, 3, H, W] (0, 1)
+    #
+    #         out_rgb_img = [
+    #             util.tensor2img(
+    #                 np.clip(out_rgb_origsize[i, ...] * 255.0, 0, 255), np.uint8
+    #             )
+    #             for i in range(out_rgb_origsize.size(0))
+    #         ]  # (0, 255)
+    #
+    #         # import matplotlib.pyplot as plt
+    #         # plt.imshow(out_rgb_img[0])
+    #         # plt.show()
+    #
+    #         save_imglist(
+    #             k, k + len(out_rgb_img), save_subfolder, out_rgb_img, logger, img_paths
+    #         )
+    #
     # dilation = [1, 2, 4]
     # weight = [1 / 3, 1 / 3, 1 / 3]
     # (
@@ -320,14 +328,14 @@ def main():
     #     JS_r_dict,
     #     CDC,
     # ) = calculate_folders_multiple(
-    #     save_folder, data_mode, dilation=dilation, weight=weight
+    #     output_folder, data_mode, dilation=dilation, weight=weight
     # )
     #
     # logger.info("################ Final Results ################")
-    # logger.info("Data: {} - {}".format(data_mode, Input_dataset_folder))
-    # logger.info("Padding mode: {}".format(padding))
-    # logger.info("Model path: {}".format(model_path))
-    # logger.info("Save images: {}".format(save_imgs))
+    # logger.info(f"Data: {data_mode} - {input_folder}")
+    # logger.info(f"Padding mode: {padding}")
+    # logger.info(f"Model path: {tcvc_model_path}")
+    # logger.info(f"Save images: {save_imgs}")
     #
     # logger.info(
     #     "JS_b_mean: {:.6f} JS_g_mean: {:.6f} JS_r_mean: {:.6f}  CDC: {:.6f}".format(
