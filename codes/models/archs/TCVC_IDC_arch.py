@@ -18,7 +18,7 @@ import torch.nn.functional as F
 from models.archs.colorizers.siggraph17 import siggraph17
 from models.archs.colorizers.eccv16 import eccv16
 
-from models.archs.colorizers.ddcolor import ddcolor
+from models.archs.colorizers.ddcolor.infer import ddcolor
 
 
 #### Flow estimation
@@ -119,7 +119,7 @@ class TCVC_IDC(nn.Module):
         elif key_net == "ddcolor":
             self.fea_key = ddcolor(
                 pretrained=True,
-                model_dir="../experiments/pretrained_models/modelscope/damo/cv_ddcolor_image-colorization/pytorch_model.pt",
+                model_dir="../experiments/pretrained_models/modelscope/damo/cv_ddcolor_image-colorization",
             )
             self.nf_key = 128
         elif key_net == "eccv16":
