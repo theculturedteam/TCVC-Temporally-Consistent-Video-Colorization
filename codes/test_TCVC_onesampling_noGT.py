@@ -235,6 +235,10 @@ def main():
             img_in = imgs[k : k + interval_length + 2]  # get input list
             img_in = np.stack(img_in, 0)  # [9, H, W, 3] rgb
 
+            # Reorders the img_in dimensions as (N, C, H, W)
+            # This reordering is necessary because PyTorch expects
+            # image tensors in the shape (N, C, H, W) where C is the number of channels.
+            # Converts reordered NumPy array into PyTorch tensors and then converts it into float
             img_tensor = torch.from_numpy(img_in.transpose(0, 3, 1, 2)).float()
 
             if rgb_flag:
