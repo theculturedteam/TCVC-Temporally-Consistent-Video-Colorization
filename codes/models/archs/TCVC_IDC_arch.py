@@ -90,7 +90,7 @@ class flownet_options:
 
 class TCVC_IDC(nn.Module):
     def __init__(
-        self, nf=64, N_RBs=2, key_net="sig17", dataset="DAVIS", train_flow_keyNet=False
+        self, nf=64, N_RBs=2, key_net="ddcolor", dataset="DAVIS", train_flow_keyNet=False
     ):
         super(TCVC_IDC, self).__init__()
 
