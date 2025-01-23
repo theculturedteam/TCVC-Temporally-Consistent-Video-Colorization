@@ -1,0 +1,3 @@
+[submodule "codes/models/archs/colorizers/ddcolor"]
+	path = codes/models/archs/colorizers/ddcolor
+	url = https://github.com/theculturedteam/DDColor
