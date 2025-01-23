@@ -109,6 +109,10 @@ class TCVC_IDC(nn.Module):
         #### define keyframe branch
         if key_net == "sig17":
             self.fea_key = siggraph17(pretrained=True, model_dir="../experiments/pretrained_models")
+        elif key_net == "ddcolor":
+            self.fea_key = ddcolor(
+                pretrained=True, model_dir="../experiments/pretrained_models"
+            )
             self.nf_key = 128
         elif key_net == "eccv16":
             self.fea_key = eccv16(pretrained=True, model_dir="../experiments/pretrained_models")
