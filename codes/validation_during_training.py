@@ -145,7 +145,7 @@ def validation_during_training(keynet, experiment_path, checkpoint):
     #### dataset path and model
     if data_mode == "DAVIS30":
         # dataset path
-        GT_dataset_folder = "/data2/yhliu/DATA/DAVIS-2017-trainval-480p/DAVIS30_GT_mod32_new/"
+        GT_dataset_folder = "/content/Testing/DAVIS30_GT_mod32_new/"
         #GT_dataset_folder = "/data1/yhliu/DATA/DAVIS-2017-trainval-480p/DAVIS4/"
         # model
         if key_net == "sig17":
