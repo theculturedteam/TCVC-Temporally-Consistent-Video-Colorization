@@ -135,7 +135,7 @@ def validation_during_training(keynet, experiment_path, checkpoint):
     #################
     
     data_mode = "DAVIS30"  # DAVIS4 | DAVIS30
-    key_net = "sig17"
+    key_net = "ddcolor"
     color_type = "LAB"
     GT_size = 256
 
@@ -155,6 +155,13 @@ def validation_during_training(keynet, experiment_path, checkpoint):
             )
            
             model = TCVC_IDC_arch.TCVC_IDC(nf=64, N_RBs=3, key_net="sig17", dataset="DAVIS4")
+        elif key_net == "ddcolor":
+            N_in = 1
+            model_path = (
+                f"{experiment_path['models']}/{checkpoint}_G.pth"
+            )
+           
+            model = TCVC_IDC_arch.TCVC_IDC(nf=64, N_RBs=3, key_net="ddcolor", dataset="DAVIS4")
        
     elif data_mode == "videvo2":
         GT_dataset_folder = "/mnt/hyzhao/Documents/datasets/color_benchmark/video/videvo2"

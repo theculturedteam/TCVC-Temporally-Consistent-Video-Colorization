@@ -49,8 +49,8 @@ network_G:
   which_model_G: TCVC_IDC  
   nf: 64
   N_RBs: 3
-  key_net: sig17
-  dataset: videvo
+  key_net: ddcolor
+  dataset: DAVIS4
   train_flow_keyNet: false
   channel_reduction: only_1x1   # only_1x1
 
