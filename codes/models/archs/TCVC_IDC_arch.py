@@ -188,6 +188,7 @@ class TCVC_IDC(nn.Module):
         if first_key_fea is not None and first_key_HR is not None:
             key_p_HR, fea_forward = first_key_HR, first_key_fea
         else:
+            print(f"x_p: {x_p}")
             key_p_HR, fea_forward = self.fea_key(x_p)
         out_l = []
         out_l.append(key_p_HR)
