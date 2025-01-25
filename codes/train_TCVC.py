@@ -219,7 +219,7 @@ def main():
                 message = "[epoch:{:3d}, iter:{:8,d}, lr:(".format(epoch, current_step)
                 for v in model.get_current_learning_rate():
                     message += "{:.3e},".format(v)
-                message += " time:{:.3f} )] ".format(end_time-start_time)
+                message += " time:{:.3f} )] ".format(end_time - start_time)
                 for k, v in logs.items():
                     message += "{:s}: {:.4e} ".format(k, v)
                     # tensorboard logger
@@ -229,23 +229,30 @@ def main():
                 if rank <= 0:
                     logger.info(message)
                 start_time = time.time()
-            
-            
+
             #### save models and training states
-            if current_step % opt["logger"]["save_checkpoint_freq"] == 0 or current_step == 1:
+            if (
+                current_step % opt["logger"]["save_checkpoint_freq"] == 0
+                or current_step == 1
+            ):
                 if rank <= 0:
                     logger.info("Saving models and training states.")
                     model.save(current_step)
                     model.save_training_state(epoch, current_step)
-            
-            
+
             #### validation
-            if (opt["datasets"].get("val", None) and (current_step % opt["train"]["val_freq"] == 0 or current_step == 1)):
+            if opt["datasets"].get("val", None) and (
+                current_step % opt["train"]["val_freq"] == 0 or current_step == 1
+            ):
                 # image restoration validation
                 # does not support multi-GPU validation
-                print('Validating......')
-                
-                psnr, js_b, js_g, js_r, CDC = validation_during_training(keynet=opt['network_G']['keynet'], experiment_path=opt["path"], checkpoint=str(current_step))
+                print("Validating......")
+
+                psnr, js_b, js_g, js_r, CDC = validation_during_training(
+                    keynet=opt["network_G"]["keynet"],
+                    experiment_path=opt["path"],
+                    checkpoint=str(current_step),
+                )
 
                 avg_psnr = psnr
 
@@ -262,9 +269,6 @@ def main():
                     tb_logger.add_scalar("JS_g", js_g, current_step)
                     tb_logger.add_scalar("JS_r", js_r, current_step)
                     tb_logger.add_scalar("CDC", CDC, current_step)
-                
-
-            
 
     if rank <= 0:
         logger.info("Saving the final model.")
