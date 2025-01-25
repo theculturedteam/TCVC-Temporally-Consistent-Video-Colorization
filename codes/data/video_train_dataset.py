@@ -210,6 +210,7 @@ class VideoTrainDataset(data.Dataset):
         # Check if the image is grayscale and convert to RGB
         if img_LQ.shape[2] == 1:  # If single channel (grayscale)
             img_LQ = np.repeat(img_LQ, 3, axis=2)  # Duplicate channel to RGB
+            print(f"img_LQ.shape = {img_LQ.shape[2]}, img_GT.shape = {img_GT.shape[2]}")
 
         LQ_l = [img_LQ[i:i+1,...] for i in range(img_LQ.shape[0])]
         
