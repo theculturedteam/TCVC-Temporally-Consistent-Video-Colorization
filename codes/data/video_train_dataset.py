@@ -207,6 +207,8 @@ class VideoTrainDataset(data.Dataset):
             
         img_LQ = img_GT_lab[:,0,:,:]
 
+        print(f"img_LQ = {img_LQ.shape}")
+
         LQ_l = [img_LQ[i:i+1,...] for i in range(img_LQ.shape[0])]
         
 #         import matplotlib.pyplot as plt
