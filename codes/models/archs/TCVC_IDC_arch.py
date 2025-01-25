@@ -249,6 +249,12 @@ class TCVC_IDC(nn.Module):
             )
             fea_forward = self.flow_warping(fea_forward, flow)
 
+            print(f"x_p_fea: {x_p_fea}")
+            print(f"x_c_fea: {x_c_fea}")
+            print(f"x_n_fea: {x_n_fea}")
+            print(f"backward_fea_l: {backward_fea_l}")
+            print(f"fea_forward: {fea_forward}")
+
             # weighting network
             W = torch.sigmoid(
                 self.weigting(
