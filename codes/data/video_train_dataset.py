@@ -193,11 +193,6 @@ class VideoTrainDataset(data.Dataset):
                     rot_ = True if random.random() < 0.5 else False
                 img_GT = augment(img_GT, hflip_, vflip_, rot_)
             
-            # Check if the image is grayscale and convert to RGB
-            if img_GT.shape[1] == 1:  # If single channel (grayscale)
-                print(f"[Before] img_GT.shape = {img_GT.shape}")
-                img_GT = np.repeat(img_GT, 3, axis=2)  # Duplicate channel to RGB
-
             img_GT = torch.from_numpy(
                 np.ascontiguousarray(np.transpose(img_GT.copy(), (2, 0, 1)))
             ).float()
@@ -212,8 +207,6 @@ class VideoTrainDataset(data.Dataset):
             
         img_LQ = img_GT_lab[:,0,:,:]
 
-        print(f"[Before] img_LQ.shape = {img_LQ.shape}, img_GT.shape = {img_GT.shape}")
-
         LQ_l = [img_LQ[i:i+1,...] for i in range(img_LQ.shape[0])]
         
 #         import matplotlib.pyplot as plt
@@ -222,7 +215,7 @@ class VideoTrainDataset(data.Dataset):
 #         plt.imshow(LQ_l[0,0,...].detach().cpu().numpy()/255.)
 #         plt.show()
         
-        print(f"[After] img_LQ.shape = {img_LQ.shape}, img_GT.shape = {img_GT.shape}")
+        print(f"[After] LQ_l.shape = {LQ_l.shape}, img_GT_lab.shape = {img_GT_lab.shape}")
 
         return {"LQs": LQ_l, "GT": img_GT_lab, "key": key, "GT_HW": [H, W]}
 
