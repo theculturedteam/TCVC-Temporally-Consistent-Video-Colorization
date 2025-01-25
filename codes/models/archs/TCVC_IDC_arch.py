@@ -103,7 +103,8 @@ class TCVC_IDC(nn.Module):
         )
 
         # self.channel_reduction = Channel_Reduction_1x1(128, 64).cuda()
-        self.channel_reduction = Channel_Reduction(128, 64).cuda()
+        # self.channel_reduction = Channel_Reduction(128, 64).cuda() #OG
+        self.channel_reduction = Channel_Reduction(100, 64).cuda()
 
         # self.weigting = WeightingNet(32 * 3 + 128 * 2, 1).cuda() # OG
         self.weigting = WeightingNet(32 * 3 + 100 * 2, 1).cuda()
