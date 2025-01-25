@@ -189,13 +189,13 @@ class TCVC_IDC(nn.Module):
             key_p_HR, fea_forward = first_key_HR, first_key_fea
         else:
             # x_p = x_p.repeat(1, 3, 1, 1)
-            key_p_HR, fea_forward = self.fea_key(x_p)
+            key_p_HR, fea_forward = self.fea_key(x_p.repeat(1, 3, 1, 1))
         out_l = []
         out_l.append(key_p_HR)
 
         # last key frame
         x_n = x[-1]
-        last_key_HR, fea_backward = self.fea_key(x_n)
+        last_key_HR, fea_backward = self.fea_key(x_n.repeat(1, 3, 1, 1))
 
         #### backward propagation
         backward_fea_l = []
