@@ -130,6 +130,7 @@ def main():
             train_size = int(math.ceil(len(train_set) / dataset_opt["batch_size"]))
             total_iters = int(opt["train"]["niter"])
             total_epochs = int(math.ceil(total_iters / train_size))
+
             if opt["dist"]:
                 train_sampler = DistIterSampler(
                     train_set, world_size, rank, dataset_ratio
@@ -139,7 +140,9 @@ def main():
                 )
             else:
                 train_sampler = None
+
             train_loader = create_dataloader(train_set, dataset_opt, opt, train_sampler)
+
             if rank <= 0:
                 logger.info(
                     "Number of train images: {:,d}, iters: {:,d}".format(
@@ -151,9 +154,11 @@ def main():
                         total_epochs, total_iters
                     )
                 )
+
         elif phase == "val":
             val_set = create_dataset(dataset_opt)
             val_loader = create_dataloader(val_set, dataset_opt, opt, None)
+
             if rank <= 0:
                 logger.info(
                     "Number of val images in [{:s}]: {:d}".format(
@@ -162,6 +167,7 @@ def main():
                 )
         else:
             raise NotImplementedError("Phase [{:s}] is not recognized.".format(phase))
+
     assert train_loader is not None
 
     #### create model
@@ -186,15 +192,19 @@ def main():
     logger.info(
         "Start training from epoch: {:d}, iter: {:d}".format(start_epoch, current_step)
     )
+
     first_time = True
     for epoch in range(start_epoch, total_epochs + 1):
         if opt["dist"]:
             train_sampler.set_epoch(epoch)
+
         for _, train_data in enumerate(train_loader):
             if first_time:
                 start_time = time.time()
                 first_time = False
+
             current_step += 1
+
             if current_step > total_iters:
                 break
 
@@ -212,17 +222,22 @@ def main():
                 end_time = time.time()
                 logs = model.get_current_log()
                 message = "[epoch:{:3d}, iter:{:8,d}, lr:(".format(epoch, current_step)
+
                 for v in model.get_current_learning_rate():
                     message += "{:.3e},".format(v)
+
                 message += " time:{:.3f} )] ".format(end_time - start_time)
+
                 for k, v in logs.items():
                     message += "{:s}: {:.4e} ".format(k, v)
                     # tensorboard logger
                     if opt["use_tb_logger"] and "debug" not in opt["name"]:
                         if rank <= 0:
                             tb_logger.add_scalar(k, v, current_step)
+
                 if rank <= 0:
                     logger.info(message)
+
                 start_time = time.time()
 
             #### save models and training states
