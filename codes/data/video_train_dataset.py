@@ -193,6 +193,9 @@ class VideoTrainDataset(data.Dataset):
                     rot_ = True if random.random() < 0.5 else False
                 img_GT = augment(img_GT, hflip_, vflip_, rot_)
             
+            # Check if the image is grayscale and convert to RGB
+            if img_GT.shape[2] == 1:  # If single channel (grayscale)
+                img_GT = np.repeat(img_GT, 3, axis=2)  # Duplicate channel to RGB
             
             img_GT = torch.from_numpy(
                 np.ascontiguousarray(np.transpose(img_GT.copy(), (2, 0, 1)))
