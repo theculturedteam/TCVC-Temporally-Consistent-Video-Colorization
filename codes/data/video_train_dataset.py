@@ -215,7 +215,7 @@ class VideoTrainDataset(data.Dataset):
 #         plt.imshow(LQ_l[0,0,...].detach().cpu().numpy()/255.)
 #         plt.show()
         
-        print(f"LQ_l= {LQ_l}, img_GT_lab= {img_GT_lab}")
+        print(f"LQ_l= {LQ_l[0].shape}, img_GT_lab= {img_GT_lab.shape}")
 
         return {"LQs": LQ_l, "GT": img_GT_lab, "key": key, "GT_HW": [H, W]}
 
