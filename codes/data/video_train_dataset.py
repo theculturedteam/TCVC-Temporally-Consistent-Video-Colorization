@@ -212,7 +212,11 @@ class VideoTrainDataset(data.Dataset):
             
         img_LQ = img_GT_lab[:,0,:,:]
 
-        print(f"[After] img_LQ.shape = {img_LQ.shape}, img_GT.shape = {img_GT.shape}")
+        print(f"img_LQ.shape = {img_LQ.shape}, img_GT.shape = {img_GT.shape}")
+        print(f"img_LQ.shape[0] = {img_LQ.shape[0]}, img_GT.shape[0] = {img_GT.shape[0]}")
+        print(f"img_LQ.shape[1] = {img_LQ.shape[1]}, img_GT.shape[1] = {img_GT.shape[1]}")
+        print(f"img_LQ.shape[2] = {img_LQ.shape[2]}, img_GT.shape[2] = {img_GT.shape[2]}")
+        print(f"img_LQ.shape[3] = {img_LQ.shape[3]}, img_GT.shape[3] = {img_GT.shape[3]}")
 
         LQ_l = [img_LQ[i:i+1,...] for i in range(img_LQ.shape[0])]
         
