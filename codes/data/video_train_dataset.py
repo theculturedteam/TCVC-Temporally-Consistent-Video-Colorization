@@ -209,7 +209,7 @@ class VideoTrainDataset(data.Dataset):
 
         print(f"img_LQ = {img_LQ.shape}")
 
-        LQ_l = [img_LQ[i:i+1,...] for i in range(img_LQ.shape[0])]
+        LQ_l = [img_LQ[i:i+1,...].repeat(3, 1, 1) for i in range(img_LQ.shape[0])]
         
 #         import matplotlib.pyplot as plt
 #         plt.imshow(GT_l[0,...].detach().cpu().numpy().transpose(1,2,0)/255.)
