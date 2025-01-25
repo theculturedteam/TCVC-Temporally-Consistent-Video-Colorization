@@ -240,9 +240,9 @@ class TCVC_IDC(nn.Module):
             x_current = x[i]
             x_n = x[i + 1]
 
-            x_p_fea = self.L_fea_extractor(x_p.repeat(1, 3, 1, 1))
-            x_c_fea = self.L_fea_extractor(x_current.repeat(1, 3, 1, 1))
-            x_n_fea = self.L_fea_extractor(x_n.repeat(1, 3, 1, 1))
+            x_p_fea = self.L_fea_extractor(x_p)
+            x_c_fea = self.L_fea_extractor(x_current)
+            x_n_fea = self.L_fea_extractor(x_n)
 
             flow = self.flow(
                 x_current.repeat(1, 3, 1, 1) + 0.5, x_p.repeat(1, 3, 1, 1) + 0.5
