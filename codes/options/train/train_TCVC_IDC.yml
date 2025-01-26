@@ -37,7 +37,7 @@ datasets:
     keyframe_interval: 10
     use_shuffle: true
     n_workers: 3  # per GPU
-    batch_size: 4
+    batch_size: 2
     GT_size: 256
     use_flip: true
     use_rot: true
