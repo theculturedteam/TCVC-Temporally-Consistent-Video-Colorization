@@ -17,6 +17,7 @@ dog-gooses
 dogs-scale
 drift-turn
 drone
+elephant
 flamingo
 hike
 hockey
