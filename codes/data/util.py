@@ -82,6 +82,13 @@ def read_img(env, path, size=None):
     """read image by skimage or from png
     return: Numpy int8, HWC, RGB, [0,255]"""
 
+    if "elephant" in path.split("/") and "DAVIS_videvo_resized300" in path.split("/"):
+        path = path.split("/")
+        for index, name in enumerate(path):
+            if name == "elephant":
+                path[index] = "Elephant"
+        path = "/".join(path)
+
     if env is None:  # img
         img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
     else:
