@@ -18,8 +18,6 @@ import torch.nn.functional as F
 from models.archs.colorizers.siggraph17 import siggraph17
 from models.archs.colorizers.eccv16 import eccv16
 
-from models.archs.colorizers.ddcolor.infer import ddcolor
-
 
 #### Flow estimation
 from models.archs.networks.FlowNet2 import FlowNet2
@@ -90,7 +88,12 @@ class flownet_options:
 
 class TCVC_IDC(nn.Module):
     def __init__(
-        self, nf=64, N_RBs=2, key_net="ddcolor", dataset="DAVIS", train_flow_keyNet=False
+        self,
+        nf=64,
+        N_RBs=2,
+        key_net="sig17",
+        dataset="DAVIS",
+        train_flow_keyNet=False,
     ):
         super(TCVC_IDC, self).__init__()
 
@@ -103,10 +106,10 @@ class TCVC_IDC(nn.Module):
         )
 
         # self.channel_reduction = Channel_Reduction_1x1(128, 64).cuda()
-        self.channel_reduction = Channel_Reduction(128, 64).cuda() #OG
+        self.channel_reduction = Channel_Reduction(128, 64).cuda()  # OG
         # self.channel_reduction = Channel_Reduction(100, 64).cuda()
 
-        self.weigting = WeightingNet(32 * 3 + 128 * 2, 1).cuda() # OG
+        self.weigting = WeightingNet(32 * 3 + 128 * 2, 1).cuda()  # OG
         # self.weigting = WeightingNet(32 * 3 + 100 * 2, 1).cuda()
         self.feature_refine = Feature_Refine(32 * 3 + 64 * 3, 128).cuda()
 
@@ -191,13 +194,13 @@ class TCVC_IDC(nn.Module):
             key_p_HR, fea_forward = first_key_HR, first_key_fea
         else:
             # x_p = x_p.repeat(1, 3, 1, 1)
-            key_p_HR, fea_forward = self.fea_key(x_p.repeat(1, 3, 1, 1))
+            key_p_HR, fea_forward = self.fea_key(x_p)
         out_l = []
         out_l.append(key_p_HR)
 
         # last key frame
         x_n = x[-1]
-        last_key_HR, fea_backward = self.fea_key(x_n.repeat(1, 3, 1, 1))
+        last_key_HR, fea_backward = self.fea_key(x_n)
 
         #### backward propagation
         backward_fea_l = []
